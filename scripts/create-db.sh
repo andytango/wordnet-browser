@@ -50,7 +50,8 @@ docker exec \
 
 echo 'Converting data...'
 
-./scripts/mysql2sqlite tmp/wordnet/mysql-wn-all.sql > data/sqlite-wordnet.sql
+./scripts/mysql2sqlite tmp/wordnet/mysql-wn-all.sql |\
+ sqlite3 ./src/data/sqlite-wordnet.sqlite
 
 echo 'Stopping mysql docker container...'
 

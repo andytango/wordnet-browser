@@ -14,7 +14,7 @@ docker run --rm -d -p 3306:3306 \
   --mount type=tmpfs,destination=/var/lib/mysql \
   mysql:latest
 
-# sleep 30
+sleep 30
 
 echo 'Creating database...'
 
@@ -35,6 +35,11 @@ docker exec -i \
   mysql-tmp \
   mysql -psecret wordnet \
   < tmp/wordnet/mysql-wn-data.sql
+
+docker exec -i \
+mysql-tmp \
+mysql -psecret wordnet \
+< tmp/wordnet/mysql-wn-constrain.sql
 
 docker exec -i \
   mysql-tmp \

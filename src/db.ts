@@ -52,12 +52,12 @@ async function loadSqliteFile(worker: DbWorker) {
   const t0 = performance.now();
   const res = await fetch(sqlData);
   const sqlFile: SqliteFile = await res.arrayBuffer();
-  console.info(`Database downloaded in ${getMsElapsedSince(t0)}`);
+  console.info(`[DB] Database downloaded in ${getMsElapsedSince(t0)}`);
 
   console.info(`Database size: ${(sqlFile.byteLength / 1e6).toPrecision(4)}MB`);
   const t1 = performance.now();
   await openDb(worker, sqlFile);
-  console.info(`Database loaded in ${getMsElapsedSince(t1)}`);
+  console.info(`[DB] Database loaded in ${getMsElapsedSince(t1)}`);
 }
 
 function openDb(worker: DbWorker, sqlFile: SqliteFile) {
@@ -69,7 +69,7 @@ function createDbInterface(worker: DbWorker) {
   return {
     async sql(strs: TemplateStringsArray, ...exprs: any[]) {
       const sql = formatSql(strs, exprs);
-      console.log("performing query", sql);
+      console.debug("[DB] Performing query", sql);
       const { error, results } = await performWorkerAction(worker, "exec", {
         sql,
       });

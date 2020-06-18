@@ -1,6 +1,7 @@
 import { map } from "ramda";
 import { default as React, useCallback, useEffect, useState } from "react";
 import { performSearch, ResultType, SearchResultWord } from "./wn";
+import { FaSearch } from "react-icons/fa";
 
 enum SearchStateType {
   "WAITING",
@@ -49,18 +50,27 @@ function App() {
   const wrapperClass =
     searchState.type === SearchStateType.WAITING ? "h-screen" : "";
 
+  const iconColor = searchTerm ? "text-red-800" : "text-gray-500";
+
   return (
     <div className="w-screen h-screen bg-gray-200">
       <div className={`mx-auto flex flex-wrap p-6 w-screen ${wrapperClass}`}>
         <div className="flex-1 max-w-sm m-auto m-4 p-8">
-          <div className="p-4 text-2xl text-red-800 text-center">Wordnet</div>
-          <input
-            className="bg-gray-100 text-center text-red-800 shadow-inner appearance-none border-2 border-gray-400 rounded w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-800"
-            type="text"
-            placeholder="Type in a word..."
-            onChange={handleChange}
-            value={searchTerm}
-          />
+          <div className="p-4 text-3xl text-red-800 text-center font-light">
+            Wordnet
+          </div>
+          <div>
+            <span className={`absolute py-4 px-3 ${iconColor}`}>
+              <FaSearch size="1.5em" />
+            </span>
+            <input
+              className="bg-gray-100 text-center text-red-800 shadow-inner appearance-none border-2 border-gray-400 rounded w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-800"
+              type="text"
+              onChange={handleChange}
+              value={searchTerm}
+              placeholder="Type something..."
+            />
+          </div>
         </div>
         {searchState.type === SearchStateType.COMPLETE && searchState.results && (
           <>

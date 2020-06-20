@@ -2,15 +2,14 @@ import { default as React, useCallback, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchActionType, SearchStateType } from "../reducers/search";
-import {
-  selectSearchState,
-  selectSearchTerm
-} from "../selectors/search";
+import { selectSearchState, selectSearchTerm } from "../selectors/search";
 import { performSearch } from "../db/search";
-export function SearchInput() {
+
+export function SearchInput({hidden}) {
   const searchState = useSelector(selectSearchState);
   const searchTerm = useSelector(selectSearchTerm);
   const dispatch = useDispatch();
+
   const handleChange = useCallback(
     (e) => dispatch({ type: SearchActionType.QUERY, query: e.target.value }),
     [dispatch]
@@ -25,7 +24,7 @@ export function SearchInput() {
   const iconColor = searchTerm ? "text-red-800" : "text-gray-500";
 
   return (
-    <>
+    <div className={`max-w-sm mx-auto ${hidden ? 'hidden' : ''}`}>
       <span className={`absolute py-4 px-3 ${iconColor}`}>
         <FaSearch size="1.5em" />
       </span>
@@ -34,7 +33,8 @@ export function SearchInput() {
         type="text"
         onChange={handleChange}
         value={searchTerm}
-        placeholder="Type something..." />
-    </>
+        placeholder="Type something..."
+      />
+    </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Dispatch } from "react";
 import { formatSql } from "../db";
 import { DbActionType } from "../dbMiddleware";
+import { Word } from "../reducers/word";
 
 export enum ResultType {
   EXACT,
@@ -8,10 +9,8 @@ export enum ResultType {
   WILDCARD,
 }
 
-export interface SearchResultWord {
+export interface SearchResultWord extends Word {
   type: ResultType;
-  wordid: number;
-  lemma: string;
 }
 
 export async function performSearch(dispatch: Dispatch<any>, query: string) {

@@ -1,29 +1,21 @@
 import { isNil } from "ramda";
+// @ts-ignore
 import sqlData from "./data/sqlite-wordnet.sqlite";
 import { isBoolean, isNumber, isString } from "./helpers";
+
+export type DbExec = (sql: string) => Promise<DbResult>;
 
 export interface DbResult {
   error?: string;
   results?: { columns: string[]; values: [][] }[];
 }
 
-export async function initDb() {
+export async function initDb(): Promise<DbExec> {
   const worker = initWorker();
   await loadSqliteFile(worker);
   console.log("loaded file");
-  DbClient.sql = createDbInterface(worker).sql;
+  return createDbInterface(worker);
 }
-
-export function getDbClient() {
-  return DbClient;
-}
-
-const DbClient = {
-  sql: (strs: TemplateStringsArray, ...exprs: any[]) => {
-    console.log("no-op");
-    return Promise.resolve({} as DbResult);
-  },
-};
 
 type DbWorker = Worker;
 
@@ -65,20 +57,16 @@ function openDb(worker: DbWorker, sqlFile: SqliteFile) {
 }
 
 function createDbInterface(worker: DbWorker) {
-  console.log("createDbInterface");
-  return {
-    async sql(strs: TemplateStringsArray, ...exprs: any[]) {
-      const sql = formatSql(strs, exprs);
-      console.debug("[DB] Performing query", sql);
-      const { error, results } = await performWorkerAction(worker, "exec", {
-        sql,
-      });
-      return { error, results };
-    },
+  return async (sql: string) => {
+    console.debug("[DB] Performing query", sql);
+    const { error, results } = await performWorkerAction(worker, "exec", {
+      sql,
+    });
+    return { error, results };
   };
 }
 
-function formatSql(strs: TemplateStringsArray, exprs: any[]) {
+export function formatSql(strs: TemplateStringsArray, ...exprs: any[]) {
   let out: string[] = [];
   const n1 = strs.length;
   const n2 = exprs.length;

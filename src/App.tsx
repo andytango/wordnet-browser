@@ -1,55 +1,30 @@
-import { map } from "ramda";
-import { default as React, useCallback, useEffect, useState } from "react";
-import { performSearch, SearchResultWord } from "./wn";
+import { map, tap } from "ramda";
+import { default as React, useCallback, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
 import { SearchResult } from "./components/SearchResult";
-
-enum SearchStateType {
-  "WAITING",
-  "SEARCHING",
-  "COMPLETE",
-}
+import { SearchActionType, SearchStateType } from "./reducers/search";
+import { performSearch, SearchResultWord } from "./wn";
+import { selectSearchState, selectSearchTerm, selectSearchResults } from "./selectors/search";
 
 function App() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchState, setSearchState] = useState({
-    type: SearchStateType.WAITING,
-    results: [] as SearchResultWord[],
-  });
-
+  const searchState = useSelector(selectSearchState);
+  const searchTerm = useSelector(selectSearchTerm);
+  const searchResults = useSelector(selectSearchResults);
+  const dispatch = useDispatch();
   const handleChange = useCallback(
-    (e) => {
-      setSearchTerm(e.target.value);
-    },
-    [searchTerm, setSearchTerm]
+    (e) => dispatch({ type: SearchActionType.QUERY, query: e.target.value }),
+    [dispatch]
   );
 
   useEffect(() => {
-    if (
-      searchTerm.length > 1 &&
-      searchState.type != SearchStateType.SEARCHING
-    ) {
-      setSearchState({
-        type: SearchStateType.SEARCHING,
-        results: [],
-      });
-
-      performSearch(searchTerm.replace(/\s/, "")).then((results) => {
-        setSearchState({
-          type: SearchStateType.COMPLETE,
-          results: results || [],
-        });
-      });
-    } else if (searchTerm.length === 0) {
-      setSearchState({
-        type: SearchStateType.WAITING,
-        results: [],
-      });
+    if (searchTerm.length > 1 && searchState != SearchStateType.SEARCHING) {
+      performSearch(dispatch, searchTerm.replace(/\s/, ""));
     }
   }, [searchTerm]);
 
   const wrapperClass =
-    searchState.type === SearchStateType.WAITING ? "h-screen" : "";
+    searchState === SearchStateType.WAITING ? "h-screen" : "";
 
   const iconColor = searchTerm ? "text-red-800" : "text-gray-500";
 
@@ -73,14 +48,14 @@ function App() {
             />
           </div>
         </div>
-        {searchState.type === SearchStateType.COMPLETE && searchState.results && (
+        {searchState === SearchStateType.COMPLETE && (
           <>
             <div className="text-center font-bold mb-2 min-w-full">
-              {searchState.results.length} results found
+              {searchResults.length} results found
             </div>
             <div className="flex-1 min-w-full flex">
               <div className="mx-auto flex flex-wrap justify-center">
-                {renderSearchResults(searchState.results)}
+                {renderSearchResults(searchResults)}
               </div>
             </div>
           </>

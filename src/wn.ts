@@ -1,5 +1,6 @@
-import { getDbClient } from "./db";
-import { converge, map, pipe, prop, objOf, zipObj } from "ramda";
+import { Dispatch } from "react";
+import { formatSql } from "./db";
+import { DbActionType } from "./dbMiddleware";
 
 export enum ResultType {
   EXACT,
@@ -13,35 +14,29 @@ export interface SearchResultWord {
   lemma: string;
 }
 
-export async function performSearch(query: string) {
-  const { sql } = getDbClient();
-  const { results } = await sql`
-  SELECT min(type) AS type, wordid, lemma
-  FROM (
-    SELECT 0 as type, wordid, lemma
-    FROM words
-    WHERE lemma LIKE ${query}
-    UNION
-    SELECT 1 as type, wordid, lemma
-    FROM words
-    WHERE lemma LIKE ${query + "%"}
-    UNION
-    SELECT 2 as type, wordid, lemma
-    FROM words
-    WHERE lemma LIKE ${"%" + query + "%"}
-  ) t
-  GROUP BY wordid, lemma
-  ORDER BY type
-  LIMIT 1000`;
-
-  if (results && results.length) {
-    return mapResultToObjects(results[0]) as SearchResultWord[];
-  }
-
-  return null;
+export async function performSearch(dispatch: Dispatch<any>, query: string) {
+  dispatch({
+    type: "SEARCH",
+    meta: {
+      kind: DbActionType.EXEC,
+      sql: formatSql`
+      SELECT min(type) AS type, wordid, lemma
+      FROM (
+        SELECT 0 as type, wordid, lemma
+        FROM words
+        WHERE lemma LIKE ${query}
+        UNION
+        SELECT 1 as type, wordid, lemma
+        FROM words
+        WHERE lemma LIKE ${query + "%"}
+        UNION
+        SELECT 2 as type, wordid, lemma
+        FROM words
+        WHERE lemma LIKE ${"%" + query + "%"}
+      ) t
+      GROUP BY wordid, lemma
+      ORDER BY type
+      LIMIT 1000`,
+    },
+  });
 }
-
-const mapResultToObjects = converge(map, [
-  pipe(prop("columns"), zipObj),
-  prop("values"),
-]);

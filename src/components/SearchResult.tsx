@@ -24,7 +24,7 @@ export function SearchResult({ result }: { result: SearchResultWord }) {
 
   return (
     <a
-      className={`m-2 p-3 rounded-md text-gray-200 cursor-pointer ${getBgClass(
+      className={`m-1 md:m-2 p-2 md:p-3 rounded-md text-gray-200 cursor-pointer ${getBgClass(
         type
       )}`}
       onClick={handleClick}

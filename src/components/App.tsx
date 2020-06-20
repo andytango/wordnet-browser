@@ -15,10 +15,10 @@ function App() {
     searchState === SearchStateType.WAITING ? "h-screen" : "";
 
   return (
-    <div className="w-screen h-screen bg-gray-200">
-      <div className={`mx-auto flex flex-wrap p-6 w-screen ${wrapperClass}`}>
-        <div className="flex-1 m-auto m-4 p-8">
-          <div className="p-4 text-3xl text-red-800 text-center font-light">
+    <div className="w-screen min-h-screen bg-gray-200">
+      <div className={`mx-auto flex flex-wrap p-1 md:p-6 w-screen ${wrapperClass}`}>
+        <div className="flex-1 m-auto m-4 md:p-8">
+          <div className="p-2 md:p-4 text-3xl text-red-800 text-center font-light">
             Wordnet
           </div>
           <Word hidden={!wordLemma} />

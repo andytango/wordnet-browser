@@ -23,7 +23,7 @@ function BackButton() {
 
   return (
     <a
-      className="inline-block m-2 p-3 rounded-md font-bold text-gray-600  cursor-pointer border-2 border-gray-600"
+      className="inline-block md:m-2 p-3 rounded-md font-bold text-gray-600  cursor-pointer border-2 border-gray-600"
       onClick={handleClick}
     >
       Back to results
@@ -44,8 +44,8 @@ function renderSense(sense: WordSenseResult) {
       className="bg-white rounded-lg p-6 my-6 max-w-screen-sm mx-auto text-left"
       key={sense.senseid}
     >
-      <div>{sense.pos}</div>
-      <div>{sense.definition}</div>
+      <span className="text-gray-500 font-bold mr-2">{sense.pos}.&nbsp;</span>
+      <span>{sense.definition}</span>
     </div>
   );
 }

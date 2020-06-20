@@ -29,7 +29,7 @@ export function SearchInput({hidden}) {
         <FaSearch size="1.5em" />
       </span>
       <input
-        className="bg-gray-100 text-center text-red-800 shadow-inner appearance-none border-2 border-gray-400 rounded w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-800"
+        className="bg-gray-100 text-center text-red-800 appearance-none border-2 border-gray-400 rounded w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-800"
         type="text"
         onChange={handleChange}
         value={searchTerm}

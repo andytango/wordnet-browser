@@ -1,3 +1,4 @@
+import "react-hot-loader";
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -13,3 +14,6 @@ ReactDOM.render(
   </Provider>,
   mountNode
 );
+
+// @ts-expect-error
+module.hot.accept();

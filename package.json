@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
+    "react-dom": "npm:@hot-loader/react-dom"
   },
   "devDependencies": {
     "@types/ramda": "^0.27.6",
@@ -30,6 +30,7 @@
     "postcss-modules": "^2.0.0",
     "prettier": "^2.0.5",
     "ramda": "^0.27.0",
+    "react-hot-loader": "^4.12.21",
     "react-icons": "^3.10.0",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",

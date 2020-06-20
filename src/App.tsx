@@ -1,11 +1,16 @@
-import { map, tap } from "ramda";
+import { map } from "ramda";
 import { default as React, useCallback, useEffect } from "react";
+import { hot } from "react-hot-loader";
 import { FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { SearchResult } from "./components/SearchResult";
 import { SearchActionType, SearchStateType } from "./reducers/search";
+import {
+  selectSearchResults,
+  selectSearchState,
+  selectSearchTerm,
+} from "./selectors/search";
 import { performSearch, SearchResultWord } from "./wn";
-import { selectSearchState, selectSearchTerm, selectSearchResults } from "./selectors/search";
 
 function App() {
   const searchState = useSelector(selectSearchState);
@@ -71,4 +76,4 @@ function renderSearchResult(res: SearchResultWord) {
   return <SearchResult key={res.wordid} result={res} />;
 }
 
-export default App;
+export default hot(module)(App);

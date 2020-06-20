@@ -1,5 +1,5 @@
 import { default as React } from "react";
-import { ResultType, SearchResultWord } from "../wn";
+import { ResultType, SearchResultWord } from "../db/search";
 
 export function SearchResult({ result }: { result: SearchResultWord }) {
   const bgClass = getBgClass(result.type);

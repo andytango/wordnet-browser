@@ -1,6 +1,6 @@
 import { Dispatch } from "react";
-import { formatSql } from "./db";
-import { DbActionType } from "./dbMiddleware";
+import { formatSql } from "../db";
+import { DbActionType } from "../dbMiddleware";
 
 export enum ResultType {
   EXACT,

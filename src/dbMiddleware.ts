@@ -55,13 +55,14 @@ function performDbExec(
   if (dbExec) {
     dbExec(sql).then((result: DbResult) => {
       dispatch({
-        type: action.type,
+        ...action,
         meta: { sql, kind: DbActionType.RESULT, ...result },
       } as DbResultAction);
     });
   }
 }
 
-export const isDbResultAction = pathEq(["meta", "kind"], DbActionType.RESULT) as (
-  a: Action
-) => a is DbResultAction;
+export const isDbResultAction = pathEq(
+  ["meta", "kind"],
+  DbActionType.RESULT
+) as (a: Action) => a is DbResultAction;

@@ -1,7 +1,5 @@
 import { Action } from "redux";
 import { DbResultMeta } from "../dbMiddleware";
-import { WordSenseResult } from "../db/wordSenses";
-import { DbResult } from "../db";
 
 export enum WordActionType {
   CLEAR = "WORD_CLEAR",
@@ -13,7 +11,7 @@ export interface Word {
   lemma: string;
 }
 
-interface WordAction extends Action {
+export interface WordAction extends Action {
   type: WordActionType;
   word: Word;
   meta?: DbResultMeta;

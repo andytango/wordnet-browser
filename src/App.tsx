@@ -1,7 +1,8 @@
 import { map } from "ramda";
 import { default as React, useCallback, useEffect, useState } from "react";
-import { performSearch, ResultType, SearchResultWord } from "./wn";
+import { performSearch, SearchResultWord } from "./wn";
 import { FaSearch } from "react-icons/fa";
+import { SearchResult } from "./components/SearchResult";
 
 enum SearchStateType {
   "WAITING",
@@ -92,28 +93,7 @@ function App() {
 const renderSearchResults = map(renderSearchResult);
 
 function renderSearchResult(res: SearchResultWord) {
-  const bgClass = getBgClass(res.type);
-  return (
-    <div
-      key={res.wordid}
-      className={`m-2 p-3 rounded-md text-gray-200 ${bgClass}`}
-    >
-      {res.lemma}
-    </div>
-  );
-}
-
-function getBgClass(type: ResultType) {
-  switch (type) {
-    case ResultType.EXACT:
-      return "bg-red-900";
-    case ResultType.STEM:
-      return "bg-gray-600";
-    case ResultType.WILDCARD:
-      return "bg-gray-500";
-    default:
-      throw new Error(`Unexpected result type ${type}`);
-  }
+  return <SearchResult key={res.wordid} result={res} />;
 }
 
 export default App;

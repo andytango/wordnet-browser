@@ -1,23 +1,15 @@
 import { default as React, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { ResultType, SearchResultWord } from "../hooks/searchWord";
+import { Routes } from "../routes";
 
 export function SearchResult({ result }: { result: SearchResultWord }) {
   const { type, lemma, wordid } = result;
   const dispatch = useDispatch();
 
   const handleClick = useCallback(
-    () =>
-      dispatch({
-        // type: WordActionType.SELECT,
-        // word: { lemma, wordid },
-        // payload: { wordid: wordid },
-        // db: {
-        //   kind: DbActionType.EXEC,
-        //   sql: wordSensesQuery(wordid),
-        // },
-      }),
-    [dispatch]
+    () => dispatch({ type: Routes.WORD, payload: { wordid } }),
+    [dispatch, wordid]
   );
 
   return (

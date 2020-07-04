@@ -1,4 +1,4 @@
-import { always, anyPass, head, ifElse, isEmpty, isNil, pipe } from "ramda";
+import { map } from "ramda";
 import { useCallback, useState } from "react";
 import { DbResult, getDbInstance } from "../db";
 import { mapResultToObjects } from "../helpers";
@@ -41,18 +41,20 @@ async function performQuery<T>(
   args: any[]
 ) {
   const dbExec = await getDbInstance();
-  const { results, error } = await dbExec(formatter(...args));
+  const res = await dbExec(formatter(...args));
+  const { results } = res;
 
   if (results) {
     setState({
       results: processResults(results),
       loading: false,
     });
+  } else {
+    setState({
+      results: [],
+      loading: false,
+    });
   }
 }
 
-const processResults = ifElse(
-  anyPass([isNil, isEmpty]),
-  always([]),
-  pipe(head, mapResultToObjects)
-) as <T>(a: DbResult[]) => T[];
+const processResults = map(mapResultToObjects) as <T>(a: DbResult[]) => T[];

@@ -1,6 +1,11 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { formatSql } from "../db";
 import { makeDbQuery } from "./db";
+import { useSelector, useDispatch } from "react-redux";
+import { selectSearchFromUrl } from "../selectors/location";
+import { Dispatch } from "redux";
+import { dispatch } from "d3";
+import { Routes } from "../routes";
 
 export enum ResultType {
   EXACT,
@@ -18,13 +23,6 @@ export interface SearchResultWord extends Word {
 }
 
 export type SearchWord = ReturnType<typeof useSearchWord>;
-
-type SetQueryState = React.Dispatch<
-  React.SetStateAction<{
-    query: string;
-    timeout: number;
-  }>
->;
 
 const useWordSearchQuery = makeDbQuery<SearchResultWord>(
   (query: string) => formatSql`
@@ -46,24 +44,43 @@ const useWordSearchQuery = makeDbQuery<SearchResultWord>(
   ORDER BY type
   LIMIT 1000`
 );
-const initialState = { query: "", timeout: -1 };
+
+const initialState = { timeout: -1 };
+
+type QueryState = typeof initialState;
+
+type SetQueryState = React.Dispatch<React.SetStateAction<QueryState>>;
 
 export function useSearchWord() {
   const [queryState, setQueryState] = useState(initialState);
   const [{ loading, results }, execQuery] = useWordSearchQuery();
-  const { query } = queryState;
+  const query = useSelector(selectSearchFromUrl);
+  const dispatch = useDispatch();
 
   const handleChange = useCallback(
     (e) => {
-      const { query, timeout } = queryState;
+      const { timeout } = queryState;
       const newQuery = e.target.value;
 
       if (newQuery !== query) {
-        handleQueryChange(timeout, setQueryState, e, execQuery, newQuery);
+        handleQueryChange(
+          timeout,
+          setQueryState,
+          dispatch,
+          e,
+          execQuery,
+          newQuery
+        );
       }
     },
-    [queryState, setQueryState]
+    [query, queryState, setQueryState]
   );
+
+  useEffect(() => {
+    if (query) {
+      setQueryState({ timeout: setTimeout(() => execQuery(query), 400) });
+    }
+  }, []);
 
   return { query, loading, results, handleChange };
 }
@@ -71,18 +88,17 @@ export function useSearchWord() {
 function handleQueryChange(
   timeout: number,
   setQueryState: SetQueryState,
+  dispatch: Dispatch,
   e: any,
   execQuery: (...args: any[]) => void,
   newQuery: any
 ) {
   clearTimeout(timeout);
+  dispatch({ type: Routes.ROOT, query: { search: newQuery } });
 
   if (newQuery) {
-    setQueryState({
-      query: e.target.value,
-      timeout: setTimeout(() => execQuery(newQuery), 400),
-    });
+    setQueryState({ timeout: setTimeout(() => execQuery(newQuery), 400) });
   } else {
-    setQueryState({ query: e.target.value, timeout: -1 });
+    setQueryState({ timeout: -1 });
   }
 }

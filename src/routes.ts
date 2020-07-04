@@ -1,7 +1,7 @@
 export enum Routes {
-  ROOT = 'ROOT'
+  ROOT = "ROOT",
 }
 
 export const RoutesMap = {
-  [Routes.ROOT]: '/',
-}
+  [Routes.ROOT]: "/",
+};

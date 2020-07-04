@@ -3,18 +3,46 @@ import { isNil } from "ramda";
 import sqlData from "./data/sqlite-wordnet.sqlite";
 import { isBoolean, isNumber, isString } from "./helpers";
 
-export type DbExec = (sql: string) => Promise<DbResult>;
+export type DbExec = (sql: string) => Promise<DbResponse>;
 
-export interface DbResult {
+export interface DbResponse {
   error?: string;
-  results?: { columns: string[]; values: [][] }[];
+  results?: DbResult[];
 }
 
-export async function initDb(): Promise<DbExec> {
+export interface DbResult {
+  columns: string[];
+  values: [][];
+}
+
+let dbInstance = null as DbExec | null;
+let isDbInitialising = false;
+let onInitialised = [] as ((dbExec: DbExec) => void)[];
+
+export function getDbInstance(): Promise<DbExec> {
+  if (dbInstance) {
+    return Promise.resolve(dbInstance);
+  }
+
+  if (isDbInitialising) {
+    return new Promise(enqueueDbInitCallback);
+  }
+
+  return initDb();
+}
+
+function enqueueDbInitCallback(res: (dbExec: DbExec) => void) {
+  onInitialised.push((dbExec) => res(dbExec));
+}
+
+async function initDb(): Promise<DbExec> {
+  isDbInitialising = true;
   const worker = initWorker();
   await loadSqliteFile(worker);
   console.log("loaded file");
-  return createDbInterface(worker);
+  isDbInitialising = false;
+  dbInstance = createDbInterface(worker);
+  return dbInstance;
 }
 
 type DbWorker = Worker;
@@ -106,7 +134,7 @@ function performWorkerAction(
   worker: DbWorker,
   action: string,
   payload = {}
-): Promise<DbResult> {
+): Promise<DbResponse> {
   const id = getNewMessageId();
   return new Promise((resolve) => {
     const t0 = performance.now();

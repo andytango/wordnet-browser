@@ -1,9 +1,6 @@
 import { default as React, useCallback } from "react";
-import { ResultType, SearchResultWord } from "../db/search";
 import { useDispatch } from "react-redux";
-import { WordActionType } from "../reducers/word";
-import { DbActionType } from "../dbMiddleware";
-import wordSensesQuery from "../db/wordSenses";
+import { ResultType, SearchResultWord } from "../hooks/searchWord";
 
 export function SearchResult({ result }: { result: SearchResultWord }) {
   const { type, lemma, wordid } = result;
@@ -12,12 +9,13 @@ export function SearchResult({ result }: { result: SearchResultWord }) {
   const handleClick = useCallback(
     () =>
       dispatch({
-        type: WordActionType.SELECT,
-        word: { lemma, wordid },
-        meta: {
-          kind: DbActionType.EXEC,
-          sql: wordSensesQuery(wordid),
-        },
+        // type: WordActionType.SELECT,
+        // word: { lemma, wordid },
+        // payload: { wordid: wordid },
+        // db: {
+        //   kind: DbActionType.EXEC,
+        //   sql: wordSensesQuery(wordid),
+        // },
       }),
     [dispatch]
   );

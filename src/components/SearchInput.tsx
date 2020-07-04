@@ -1,30 +1,19 @@
-import { default as React, useCallback, useEffect } from "react";
+import { default as React } from "react";
 import { FaSearch } from "react-icons/fa";
-import { useDispatch, useSelector } from "react-redux";
-import { SearchActionType, SearchStateType } from "../reducers/search";
-import { selectSearchState, selectSearchTerm } from "../selectors/search";
-import { performSearch } from "../db/search";
+import { SearchWord } from "../hooks/searchWord";
 
-export function SearchInput({hidden}) {
-  const searchState = useSelector(selectSearchState);
-  const searchTerm = useSelector(selectSearchTerm);
-  const dispatch = useDispatch();
-
-  const handleChange = useCallback(
-    (e) => dispatch({ type: SearchActionType.QUERY, query: e.target.value }),
-    [dispatch]
-  );
-
-  useEffect(() => {
-    if (searchTerm.length > 1 && searchState != SearchStateType.SEARCHING) {
-      performSearch(dispatch, searchTerm.replace(/\s/, ""));
-    }
-  }, [searchTerm]);
-
-  const iconColor = searchTerm ? "text-red-800" : "text-gray-500";
+export function SearchInput({
+  hidden,
+  searchWord,
+}: {
+  hidden: boolean;
+  searchWord: SearchWord;
+}) {
+  const { query, handleChange } = searchWord;
+  const iconColor = query ? "text-red-800" : "text-gray-500";
 
   return (
-    <div className={`max-w-sm mx-auto ${hidden ? 'hidden' : ''}`}>
+    <div className={`max-w-sm mx-auto ${hidden ? "hidden" : ""}`}>
       <span className={`absolute py-4 px-3 ${iconColor}`}>
         <FaSearch size="1.5em" />
       </span>
@@ -32,7 +21,7 @@ export function SearchInput({hidden}) {
         className="bg-gray-100 text-center text-red-800 appearance-none border-2 border-gray-400 rounded w-full py-4 px-4 text-gray-700 leading-tight focus:outline-none focus:bg-white focus:border-red-800"
         type="text"
         onChange={handleChange}
-        value={searchTerm}
+        value={query}
         placeholder="Type something..."
       />
     </div>

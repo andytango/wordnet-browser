@@ -1,14 +1,17 @@
 import { default as React, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ResultType, SearchResultWord } from "../hooks/searchWord";
 import { Routes } from "../routes";
+import { selectSearchFromUrl } from "../selectors/location";
 
 export function SearchResult({ result }: { result: SearchResultWord }) {
   const { type, lemma, wordid } = result;
+  const search = useSelector(selectSearchFromUrl);
   const dispatch = useDispatch();
 
   const handleClick = useCallback(
-    () => dispatch({ type: Routes.WORD, payload: { wordid } }),
+    () =>
+      dispatch({ type: Routes.WORD, payload: { wordid }, query: { search } }),
     [dispatch, wordid]
   );
 

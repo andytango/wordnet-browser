@@ -1,11 +1,10 @@
-import { useCallback, useState, useEffect } from "react";
-import { formatSql } from "../db";
-import { makeDbQuery } from "./db";
-import { useSelector, useDispatch } from "react-redux";
-import { selectSearchFromUrl } from "../selectors/location";
+import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Dispatch } from "redux";
-import { dispatch } from "d3";
+import { formatSql } from "../db";
 import { Routes } from "../routes";
+import { selectLocationType, selectSearchFromUrl } from "../selectors/location";
+import { makeDbQuery } from "./db";
 
 export enum ResultType {
   EXACT,
@@ -13,7 +12,7 @@ export enum ResultType {
   WILDCARD,
 }
 
-interface Word {
+export interface Word {
   lemma: string;
   wordid: number;
 }
@@ -56,6 +55,7 @@ export function useSearchWord() {
   const [{ loading, results }, execQuery] = useWordSearchQuery();
   const query = useSelector(selectSearchFromUrl);
   const dispatch = useDispatch();
+  const locationType = useSelector(selectLocationType);
 
   const handleChange = useCallback(
     (e) => {
@@ -67,7 +67,7 @@ export function useSearchWord() {
           timeout,
           setQueryState,
           dispatch,
-          e,
+          locationType,
           execQuery,
           newQuery
         );
@@ -77,8 +77,8 @@ export function useSearchWord() {
   );
 
   useEffect(() => {
-    if (query) {
-      setQueryState({ timeout: setTimeout(() => execQuery(query), 400) });
+    if (query && locationType === Routes.ROOT) {
+      setQueryState({ timeout: setTimeout(() => execQuery(query), 0) });
     }
   }, []);
 
@@ -89,14 +89,14 @@ function handleQueryChange(
   timeout: number,
   setQueryState: SetQueryState,
   dispatch: Dispatch,
-  e: any,
+  locationType: Routes,
   execQuery: (...args: any[]) => void,
   newQuery: any
 ) {
   clearTimeout(timeout);
   dispatch({ type: Routes.ROOT, query: { search: newQuery } });
 
-  if (newQuery) {
+  if (newQuery && locationType === Routes.ROOT) {
     setQueryState({ timeout: setTimeout(() => execQuery(newQuery), 400) });
   } else {
     setQueryState({ timeout: -1 });

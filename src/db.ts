@@ -1,4 +1,4 @@
-import { isNil } from "ramda";
+import { isNil, call } from "ramda";
 // @ts-ignore
 import sqlData from "./data/sqlite-wordnet.sqlite";
 import { isBoolean, isNumber, isString } from "./helpers";
@@ -39,9 +39,12 @@ async function initDb(): Promise<DbExec> {
   isDbInitialising = true;
   const worker = initWorker();
   await loadSqliteFile(worker);
-  console.log("loaded file");
+  console.log("[DB] Loaded file");
   isDbInitialising = false;
-  dbInstance = createDbInterface(worker);
+  const newInstance = createDbInterface(worker);
+  dbInstance = newInstance;
+  onInitialised.forEach((fn) => fn(newInstance));
+  onInitialised = [];
   return dbInstance;
 }
 
@@ -142,7 +145,7 @@ function performWorkerAction(
 
     const handleResponse = (event: MessageEvent) => {
       if (event.data.id === id) {
-        console.debug(`[DB] Query execution: ${getMsElapsedSince(t0)}`);
+        console.info(`[DB] Query execution: ${getMsElapsedSince(t0)}`);
         worker.removeEventListener("message", handleResponse);
         resolve(event.data);
       }

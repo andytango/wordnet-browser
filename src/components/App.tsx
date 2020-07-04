@@ -5,6 +5,7 @@ import { useSearchWord } from "../hooks/searchWord";
 import { selectWordId } from "../selectors/location";
 import { SearchInput } from "./SearchInput";
 import { SearchResults } from "./SearchResults";
+import Word from "./Word";
 
 function App() {
   const searchWord = useSearchWord();
@@ -17,8 +18,9 @@ function App() {
           <div className="p-2 md:p-4 text-3xl text-red-800 text-center font-light">
             Wordnet
           </div>
-          <SearchInput hidden={!!wordid} {...{ searchWord }} />
-          <SearchResults hidden={!!wordid} {...{ searchWord }} />
+          <SearchInput hidden={wordid > -1} {...{ searchWord }} />
+          <SearchResults hidden={wordid > -1} {...{ searchWord }} />
+          <Word hidden={wordid < 0} />
         </div>
       </div>
     </div>

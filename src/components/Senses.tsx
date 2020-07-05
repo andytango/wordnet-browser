@@ -1,16 +1,17 @@
-import ellipsize from "ellipsize";
-import React, { useRef, useEffect, useState, useCallback } from "react";
-import { useWordHierarchy } from "../hooks/wordHierarchy";
 import * as d3 from "d3";
+import ellipsize from "ellipsize";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectSearchFromUrl } from "../selectors/location";
+import { useWordHierarchy } from "../hooks/wordHierarchy";
 import { Routes } from "../routes";
+import { selectSearchFromUrl, selectWordId } from "../selectors/location";
 
 const truncateStr = (s: string) => ellipsize(s, 52);
 
 export function Senses() {
+  const wordid = useSelector(selectWordId);
   const wordHierarchy = useWordHierarchy();
-  const elem = useRef(null as null | Element);
+  const elem = useRef<HTMLDivElement>(null);
   const width = (elem.current && elem.current.clientWidth) || 0;
   const [root, setRoot] = useState(null as any);
   const dispatch = useDispatch();
@@ -22,6 +23,16 @@ export function Senses() {
     [dispatch]
   );
 
+  const resetCanvas = useCallback(() => {
+    if (elem.current && elem.current.firstChild) {
+      elem.current.removeChild(elem.current.firstChild);
+    }
+  }, [elem.current]);
+
+  useEffect(() => {
+    resetCanvas();
+  }, [wordid]);
+
   useEffect(() => {
     if (wordHierarchy) {
       const newRoot = d3.hierarchy(wordHierarchy);
@@ -32,15 +43,11 @@ export function Senses() {
   }, [wordHierarchy]);
 
   useEffect(() => {
-    if (elem.current.firstChild) {
-      elem.current.removeChild(elem.current.firstChild);
-    }
-  }, [root]);
-
-  useEffect(() => {
     if (!root || !elem.current) {
       return;
     }
+
+    resetCanvas();
 
     let x0 = Infinity;
     let x1 = -x0;

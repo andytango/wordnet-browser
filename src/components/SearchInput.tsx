@@ -2,18 +2,12 @@ import { default as React } from "react";
 import { FaSearch } from "react-icons/fa";
 import { SearchWord } from "../hooks/searchWord";
 
-export function SearchInput({
-  hidden,
-  searchWord,
-}: {
-  hidden: boolean;
-  searchWord: SearchWord;
-}) {
+export function SearchInput({ searchWord }: { searchWord: SearchWord }) {
   const { query, handleChange } = searchWord;
   const iconColor = query ? "text-red-800" : "text-gray-500";
 
   return (
-    <div className={`max-w-sm mx-auto ${hidden ? "hidden" : ""}`}>
+    <div className="max-w-sm mx-auto">
       <span className={`absolute py-4 px-3 ${iconColor}`}>
         <FaSearch size="1.5em" />
       </span>

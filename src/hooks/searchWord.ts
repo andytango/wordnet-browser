@@ -80,7 +80,7 @@ export function useSearchWord() {
     if (query && locationType === Routes.ROOT) {
       setQueryState({ timeout: setTimeout(() => execQuery(query), 0) });
     }
-  }, []);
+  }, [locationType]);
 
   return { query, loading, results, handleChange };
 }

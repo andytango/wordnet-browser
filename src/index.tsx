@@ -16,4 +16,6 @@ ReactDOM.render(
 );
 
 // @ts-expect-error
-module.hot.accept();
+if (module.hot) {
+  module.hot.accept();
+}

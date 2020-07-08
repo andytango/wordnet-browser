@@ -1,12 +1,12 @@
 import {
   equals,
+  filter,
   identity,
   ifElse,
   is,
   length,
   map,
   pipe,
-  filter,
   propEq,
   useWith,
 } from "ramda";

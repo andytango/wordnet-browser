@@ -34,7 +34,9 @@ export function SearchResults({ searchWord }: { searchWord: SearchWord }) {
 
   if (shouldShowLoading) {
     return (
-      <div className="text-center font-bold my-6 min-w-full">Please wait...</div>
+      <div className="text-center font-bold my-6 min-w-full">
+        Please wait...
+      </div>
     );
   }
 

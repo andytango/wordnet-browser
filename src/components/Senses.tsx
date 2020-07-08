@@ -51,12 +51,6 @@ export function Senses() {
   }, [elemRef.current]);
 
   useEffect(() => {
-    console.log("Rendering tree", {
-      wordHierarchy,
-      dimensions,
-      elemRef: elemRef.current,
-      handleClick,
-    });
     if (
       wordHierarchy &&
       dimensions.width > 0 &&

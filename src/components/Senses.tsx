@@ -8,7 +8,7 @@ import { selectSearchFromUrl, selectWordId } from "../selectors/location";
 
 export function Senses() {
   const wordid = useSelector(selectWordId);
-  const wordHierarchy = useWordHierarchy();
+  const {wordHierarchy, loading} = useWordHierarchy();
   const elemRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: -1, height: -1 });
   const dispatch = useDispatch();
@@ -67,5 +67,14 @@ export function Senses() {
     }
   }, [wordHierarchy, dimensions, elemRef.current, handleClick]);
 
-  return <div className="flex-1" ref={elemRef} />;
+  
+  if(!loading && !wordHierarchy) {
+    return <div className="flex-1" ref={elemRef}>
+    No links found, try another word or phrase.
+  </div>;
+  }
+
+  return <div className="flex-1" ref={elemRef}>
+    {loading && 'Please wait...'}
+  </div>;
 }

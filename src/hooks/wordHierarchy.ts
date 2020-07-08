@@ -127,17 +127,23 @@ function formatWordLinksQuery(wordid: number) {
 export function useWordHierarchy() {
   const wordid = useSelector(selectWordId);
 
-  const [wordHierarchy, setWordHierarchy] = useState(
-    null as null | WordHierarchy
-  );
+  const [{ wordHierarchy, loading }, setWordHierarchy] = useState({
+    loading: true,
+    wordHierarchy: null as WordHierarchy | null,
+  });
 
   useEffect(() => {
     if (wordid) {
-      getWordHierarchy(wordid).then(setWordHierarchy);
+      getWordHierarchy(wordid).then((wordHierarchy) =>
+        setWordHierarchy({
+          loading: false,
+          wordHierarchy,
+        })
+      );
     }
   }, [wordid]);
 
-  return wordHierarchy;
+  return { wordHierarchy, loading };
 }
 
 async function getWordHierarchy(wordid: number) {

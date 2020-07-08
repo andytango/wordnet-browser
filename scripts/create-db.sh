@@ -14,7 +14,9 @@ docker run --rm -d -p 3306:3306 \
   --mount type=tmpfs,destination=/var/lib/mysql \
   mysql:latest
 
-sleep 30
+echo 'Waiting for mysql to start...'
+
+sleep 40
 
 echo 'Creating database...'
 

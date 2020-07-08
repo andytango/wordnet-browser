@@ -19,13 +19,12 @@ export function renderWordHierarchy(
   const svg = d3
     .select(elem)
     .append("svg")
-    .attr("viewBox", [0, 0, width, x1 - x0 + root.data.dx * 4]);
-
-  root.each((d) => {
-    if (d.depth < 3) {
-      d.y = d.y * 0.5;
-    }
-  });
+    .attr("viewBox", [
+      root.data.dy / 4,
+      0,
+      width + root.data.dy / 4,
+      x1 - x0 + root.data.dx * 4,
+    ]);
 
   const mainGroup = svg
     .append("g")
@@ -71,20 +70,15 @@ export function renderWordHierarchy(
         tooltip.attr("transform", `translate(${d.y},${d.x})`);
 
         const textWidth = tooltipText
-          .attr("dy", d.depth < 3 ? `1.5em` : "0.31em")
+          .attr("dy", d.depth < 3 ? `1.5em` : "0.8em")
           .attr("dx", d.children ? `0.5em` : "1.2em")
           .text(d.data.definition)
-          .attr("text-anchor", getTextAnchor(d))
+          .attr("text-anchor", "middle")
           .node()
           .getComputedTextLength();
 
         tooltipRect.attr("width", textWidth + 16);
-
-        if (d.depth < 2) {
-          tooltipRect.attr("x", -textWidth / 2);
-        } else {
-          tooltipRect.attr("x", 0);
-        }
+        tooltipRect.attr("x", -textWidth / 2);
 
         tooltip.attr("visibility", "visible");
         d3.event.stopPropagation();
@@ -98,14 +92,6 @@ export function renderWordHierarchy(
     .attr("r", 6);
 
   node
-    .filter(hasPath(["data", "link"]))
-    .append("text")
-    .attr("fill", "#718096")
-    .attr("dy", `1.2em`)
-    .attr("text-anchor", "end")
-    .text(path(["data", "link"]));
-
-  node
     .append("text")
     .attr("class", (d) => {
       if (d.depth > 0) {
@@ -114,15 +100,13 @@ export function renderWordHierarchy(
 
       return "";
     })
-    .attr("dy", (d) => {
-      return d.depth < 3 ? `1.2em` : "0.2em";
-    })
-    .attr("dx", (d) => (d.children ? `0.5em` : "1em"))
+    .attr("dx", getTextDx)
+    .attr("dy", getTextDy)
     .attr("text-anchor", getTextAnchor)
     .on("click", (d) => {
       d.data.wordid && handleClick(d.data.wordid);
     })
-    .text((d) => truncateStr(d.data.lemma || d.data.definition, d.depth))
+    .text(getTextLabel(truncateStr))
     .append("svg:title")
     .text((d) => d.data.lemma || d.data.definition);
 
@@ -134,11 +118,29 @@ export function renderWordHierarchy(
     .attr("height", "2em")
     .attr("fill", "white")
     .attr("rx", "3");
+
   const tooltipText = tooltip.append("text");
 
   mainGroup.on("click", () => {
     tooltip.attr("visibility", "hidden");
   });
+}
+
+function getTextLabel(truncateStr) {
+  return (d) => {
+    switch (d.depth) {
+      case 0:
+        return truncateStr(d.data.lemma, d.depth);
+      case 1:
+        return truncateStr(d.data.definition, d.depth);
+      case 2:
+        return truncateStr(d.data.link, d.depth);
+      case 3:
+        return truncateStr(d.data.lemma, d.depth);
+      default:
+        throw new Error(`Unexpected tree depth ${d.depth}`);
+    }
+  };
 }
 
 function createD3Hierarchy(wordHierarchy, { height, width }) {
@@ -150,13 +152,13 @@ function createD3Hierarchy(wordHierarchy, { height, width }) {
 
 function getDy(width, newRoot) {
   if (width < 1440) {
-    return width / (newRoot.height + 2);
+    return width / (newRoot.height + 1);
   }
 
   return width / (newRoot.height + 1);
 }
 
-const minSpacing = 24;
+const minSpacing = 30;
 
 function getDx(newRoot, height) {
   const summed = newRoot.copy().sum(always(1));
@@ -176,19 +178,23 @@ function getStrLimit({ width }) {
     }
 
     if (depth === 1 && width > 2560) {
-      return 70;
+      return 100;
     }
 
     if (depth === 1 && width > 1920) {
-      return 50;
+      return 90;
     }
 
     if (depth === 1 && width > 1600) {
-      return 40;
+      return 80;
+    }
+
+    if (depth === 1 && width > 1280) {
+      return 70;
     }
 
     if (depth === 1) {
-      return 30;
+      return 60;
     }
 
     if (width > 2560) {
@@ -236,9 +242,36 @@ function getBounds(root) {
 }
 
 function getTextAnchor(d) {
-  if (d.depth < 2) {
-    return "middle";
+  if (d.depth === 0 || d.depth > 2) {
+    return "start";
   }
 
-  return "start";
+  return "middle";
+}
+
+function getTextDx(d) {
+  if (d.depth === 3) {
+    return `1em`;
+  }
+
+  return 0;
+}
+
+function getTextDy(d) {
+  if (d.depth === 0 || d.depth === 2) {
+    return `-1em`;
+  }
+
+  if (d.depth === 3) {
+    return `0.2em`;
+  }
+
+  return `1.5em`;
+}
+
+function getToolTipTextAnchor(d) {
+  if (d.depth === 0 || d.depth === 2) {
+    return "start";
+  }
+  return "middle";
 }

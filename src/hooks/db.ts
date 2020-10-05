@@ -24,6 +24,7 @@ export function makeDbQuery<T>(formatter: QueryFormatter) {
     const [state, setState] = useState(initialState as QueryState<T>);
     const execQuery = useCallback(
       (...args: Parameters<typeof formatter>) => {
+        setState({ loading: true, results: [] });
         performQuery({ formatter, setState }, args);
       },
       [state, setState]

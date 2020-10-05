@@ -4,7 +4,7 @@ import { SearchResultWord, SearchWord } from "../hooks/searchWord";
 import { SearchResult } from "./SearchResult";
 
 export function SearchResults({ searchWord }: { searchWord: SearchWord }) {
-  const { loading, results } = searchWord;
+  const { loading, results, query } = searchWord;
   const searchResults = head(results) || [];
   const [{ timeout, shouldShowLoading }, setLoadingTimeoutState] = useState({
     timeout: -1,
@@ -40,7 +40,7 @@ export function SearchResults({ searchWord }: { searchWord: SearchWord }) {
     );
   }
 
-  return !loading && Array.isArray(searchResults) && searchResults.length ? (
+  return !loading && Array.isArray(searchResults) && query ? (
     <>
       <div className="text-center font-bold my-6 min-w-full">
         {searchResults.length} results found

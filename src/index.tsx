@@ -5,6 +5,9 @@ import { Provider } from "react-redux";
 import App from "./components/App";
 import "./index.css";
 import store from "./store";
+import { initDb } from "./db";
+
+initDb();
 
 var mountNode = document.getElementById("app");
 

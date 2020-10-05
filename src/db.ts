@@ -35,7 +35,7 @@ function enqueueDbInitCallback(res: (dbExec: DbExec) => void) {
   onInitialised.push((dbExec) => res(dbExec));
 }
 
-async function initDb(): Promise<DbExec> {
+export async function initDb(): Promise<DbExec> {
   isDbInitialising = true;
   const worker = initWorker();
   await loadSqliteFile(worker);
